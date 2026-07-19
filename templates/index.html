@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Tuner — Batch Testing & Tuning</title>
+    <meta name="description" content="Interactive batch testing and optimization tool for LLM prompts. Test across Gemini and Groq models with CSV bulk import.">
+    <!-- Security: Content Security Policy (defense-in-depth fallback) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- PapaParse CDN for CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="/static/style.css?v=2">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-logo">
+                <i class="fa-solid fa-wand-magic-sparkles logo-icon"></i>
+                <div class="logo-text">
+                    <h1>Prompt Tuner</h1>
+                    <p class="tagline">Interactive Batch Testing & Prompt Optimization</p>
+                </div>
+            </div>
+            <div class="header-center">
+                <a href="/help" target="_blank" class="btn-help-link">
+                    <i class="fa-solid fa-book-open"></i>
+                    How to Use
+                </a>
+            </div>
+            <div class="header-status">
+                <div class="status-pill privacy-pill" title="Your API keys and prompts are processed in-memory only. Nothing is stored on the server, logged, or shared with third parties.">
+                    <i class="fa-solid fa-shield-halved" style="color: var(--success); font-size: 11px;"></i>
+                    <span class="status-label">Keys & Data: Client-Only</span>
+                </div>
+                <div id="connection-indicator" class="status-pill status-ready">
+                    <span class="status-dot"></span>
+                    <span class="status-label">API Server Connected</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Top Horizontal Settings Bar -->
+        <section class="settings-bar-top glass-card">
+            <div class="settings-grid">
+                <!-- Provider -->
+                <div class="form-group">
+                    <label for="provider-select">Provider</label>
+                    <select id="provider-select">
+                        <option value="gemini">Gemini (Google)</option>
+                        <option value="groq">Groq</option>
+                    </select>
+                </div>
+
+                <!-- API Key(s) -->
+                <div class="form-group keys-group">
+                    <div class="label-with-action">
+                        <label for="api-keys">API Key(s)</label>
+                        <button id="toggle-keys-mask" class="btn-text-action" title="Toggle visibility">
+                            <i class="fa-solid fa-eye-slash"></i> Mask Keys
+                        </button>
+                    </div>
+                    <textarea id="api-keys" class="api-keys-textarea-compact" placeholder="Paste keys here, one per line."></textarea>
+                </div>
+
+                <!-- Model Selection -->
+                <div class="form-group">
+                    <div class="label-with-action">
+                        <label for="model-select">Model</label>
+                        <span id="model-status-label" class="model-status fallback">Fallback List</span>
+                    </div>
+                    <select id="model-select">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <!-- Temperature -->
+                <div class="form-group">
+                    <label for="temperature-input">Temp: <span id="temp-val">0.7</span></label>
+                    <input type="range" id="temperature-input" min="0" max="2" step="0.1" value="0.7">
+                </div>
+
+                <!-- Max Tokens -->
+                <div class="form-group">
+                    <label for="max-tokens-input">Max Tokens</label>
+                    <input type="number" id="max-tokens-input" min="1" max="32768" value="1024">
+                </div>
+
+                <!-- Input Mode Toggle -->
+                <div class="form-group mode-toggle-group">
+                    <label>Input Configuration</label>
+                    <div class="input-mode-toggle-container">
+                        <button id="mode-manual-btn" class="toggle-btn active">Manual Entry</button>
+                        <button id="mode-csv-btn" class="toggle-btn">CSV Upload</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Relocated Dynamic Inputs Section -->
+            <div class="settings-row-inputs" id="settings-row-inputs">
+                <!-- Dynamic Manual Input Panel -->
+                <div id="manual-input-panel" class="input-panel-section">
+                    <div id="manual-fields-container" class="fields-row">
+                        <!-- Dynamically generated fields for variables -->
+                        <p class="no-vars-msg">No variables found in template. Prompt will run static.</p>
+                    </div>
+                </div>
+
+                <!-- CSV Upload Panel -->
+                <div id="csv-input-panel" class="input-panel-section hidden">
+                    <div class="csv-horizontal-upload-container">
+                        <label class="file-upload-zone-compact" id="drag-drop-zone" for="csv-file-input">
+                            <input type="file" id="csv-file-input" accept=".csv">
+                            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                            <span class="upload-label">Drag & drop CSV or click to browse</span>
+                            <span class="file-spec-hint">(Headers must match prompt variables)</span>
+                        </label>
+                        
+                        <!-- CSV Validation Message -->
+                        <div id="csv-validation-box" class="validation-message-box hidden">
+                            <!-- Populated by JS -->
+                        </div>
+
+                        <!-- CSV Preview -->
+                        <div id="csv-preview-container" class="csv-preview-wrapper hidden">
+                            <div class="mini-table-scroll">
+                                <table id="csv-preview-table">
+                                    <thead></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Two-Column Workspace -->
+        <main class="workspace-layout">
+            <!-- Left Column: Prompt Configuration & Variable inputs -->
+            <aside class="left-prompt-column">
+                <!-- Prompt Editor Card -->
+                <div class="glass-card prompt-editor-card">
+                    <div class="card-header">
+                        <div class="header-title">
+                            <i class="fa-solid fa-code"></i>
+                            <h2>Prompt Configuration</h2>
+                        </div>
+                        <div class="header-actions">
+                            <button id="toggle-system-prompt" class="btn btn-secondary btn-sm">
+                                <i class="fa-solid fa-chevron-down"></i> System Prompt
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Collapsible System Prompt Section -->
+                    <div id="system-prompt-container" class="system-prompt-wrapper collapsed">
+                        <label for="system-prompt">System Instruct / Persona</label>
+                        <textarea id="system-prompt" placeholder="E.g., You are a helpful assistant that writes concise summaries. Keep replies under 3 sentences."></textarea>
+                    </div>
+
+                    <!-- Prompt Template Section -->
+                    <div class="template-wrapper">
+                        <div class="wrapper-header">
+                            <label for="prompt-template">User Prompt Template</label>
+                            <span class="helper-text">Use Python format syntax like <code>{topic}</code> or <code>{tone}</code></span>
+                        </div>
+                        <div class="editor-container">
+                            <textarea id="prompt-template" placeholder="E.g., Write a {tone} paragraph about {topic}. Provide exactly {count} key takeaways."></textarea>
+                        </div>
+                        <div class="variable-detector">
+                            <span class="detector-label">Detected Variables:</span>
+                            <div id="detected-variables-list" class="chip-container">
+                                <span class="empty-chips-placeholder">No variables detected yet. Write {...} in prompt.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Master Execution -->
+                <div class="execution-actions">
+                    <button id="run-trigger" class="btn btn-primary btn-large">
+                        <i class="fa-solid fa-plus"></i> Add to Test Table
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Right Column: Test Results -->
+            <section class="right-results-column">
+                <!-- Results Card -->
+                <div class="glass-card results-card">
+                    <div class="card-header">
+                        <div class="header-title">
+                            <i class="fa-solid fa-list-check"></i>
+                            <h2>Test Results</h2>
+                        </div>
+                        <div class="results-meta-indicators">
+                            <div class="meta-indicator info">Total: <span id="count-total">0</span></div>
+                            <div class="meta-indicator success">Success: <span id="count-success">0</span></div>
+                            <div class="meta-indicator error">Failed: <span id="count-failed">0</span></div>
+                        </div>
+                        <div class="header-actions">
+                            <button id="rerun-selected" class="btn btn-secondary btn-sm" disabled>
+                                <i class="fa-solid fa-play"></i> Run Selected
+                            </button>
+                            <button id="rerun-all" class="btn btn-primary btn-sm" disabled>
+                                <i class="fa-solid fa-circle-play"></i> Run All
+                            </button>
+                            <button id="clear-results" class="btn btn-secondary btn-sm" disabled>
+                                <i class="fa-solid fa-trash-can"></i> Delete All
+                            </button>
+                            <button id="export-csv" class="btn btn-primary btn-sm" disabled>
+                                <i class="fa-solid fa-download"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-scroll-container">
+                        <table id="results-table">
+                            <thead>
+                                <tr id="table-headers">
+                                    <th style="width: 40px;"><input type="checkbox" id="select-all-rows"></th>
+                                    <th style="width: 60px;">ID</th>
+                                    <th>Inputs</th>
+                                    <th>Hydrated Prompt</th>
+                                    <th>LLM Output</th>
+                                    <th style="width: 80px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                                <tr class="empty-table-row">
+                                    <td colspan="6" class="empty-table-message">
+                                        <i class="fa-solid fa-inbox empty-icon"></i>
+                                        <p>No runs yet. Enter values in the sidebar and click Run to begin.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for viewing full text -->
+    <div id="prompt-modal" class="modal-overlay hidden">
+        <div class="modal-card glass-card">
+            <div class="modal-header">
+                <h3 id="modal-title">Full View</h3>
+                <button id="close-modal" class="btn-close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <pre id="modal-prompt-content"></pre>
+                <textarea id="modal-textarea-content" class="modal-textarea hidden" placeholder="Enter value..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button id="copy-modal-prompt" class="btn btn-secondary">
+                    <i class="fa-solid fa-copy"></i> <span id="copy-modal-text">Copy Text</span>
+                </button>
+                <button id="save-modal-prompt" class="btn btn-primary hidden">
+                    <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>
