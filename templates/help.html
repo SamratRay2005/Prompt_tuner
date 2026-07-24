@@ -15,18 +15,18 @@
            Design tokens — matches the main app's design system
         ============================================================ */
         :root {
-            --bg-main: #0b0f19;
-            --bg-card: rgba(22, 28, 45, 0.7);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --primary-glow: rgba(99, 102, 241, 0.3);
+            --bg-main: #03120a;
+            --bg-card: rgba(6, 18, 12, 0.66);
+            --border-color: rgba(34, 197, 94, 0.06);
+            --primary: #22c55e;
+            --primary-hover: #16a34a;
+            --primary-glow: rgba(34, 197, 94, 0.32);
             --success: #10b981;
             --warning: #f59e0b;
             --error: #f43f5e;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
+            --text-primary: #eafaf0;
+            --text-secondary: #9ad7c2;
+            --text-muted: #6b8676;
             --font-heading: 'Outfit', sans-serif;
             --font-body: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
@@ -40,8 +40,8 @@
         body {
             background-color: var(--bg-main);
             background-image:
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 55%),
-                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.06) 0px, transparent 55%);
+                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 120, 80, 0.04) 0px, transparent 50%);
             background-attachment: fixed;
             color: var(--text-primary);
             font-family: var(--font-body);
@@ -85,9 +85,9 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(99, 102, 241, 0.12);
-            border: 1px solid rgba(99, 102, 241, 0.25);
-            color: #a5b4fc;
+            background: rgba(34, 197, 94, 0.08);
+            border: 1px solid rgba(34, 197, 94, 0.18);
+            color: #bbf7d0;
             text-decoration: none;
             padding: 8px 16px;
             border-radius: var(--radius-sm);
@@ -97,7 +97,7 @@
         }
 
         .nav-back:hover {
-            background: rgba(99, 102, 241, 0.22);
+            background: rgba(34, 197, 94, 0.16);
             transform: translateX(-2px);
         }
 
@@ -120,9 +120,9 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(99, 102, 241, 0.12);
-            border: 1px solid rgba(99, 102, 241, 0.25);
-            color: #a5b4fc;
+            background: rgba(34, 197, 94, 0.08);
+            border: 1px solid rgba(34, 197, 94, 0.16);
+            color: #bbf7d0;
             font-size: 12px;
             font-weight: 600;
             padding: 4px 12px;
@@ -139,7 +139,7 @@
             letter-spacing: -1.5px;
             line-height: 1.1;
             margin-bottom: 16px;
-            background: linear-gradient(135deg, #f8fafc 0%, #94a3b8 100%);
+            background: linear-gradient(135deg, #f8fafc 0%, var(--text-secondary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -181,7 +181,7 @@
         }
 
         .toc-list a {
-            color: #a5b4fc;
+            color: var(--text-secondary);
             text-decoration: none;
             font-size: 13px;
             display: flex;
@@ -190,8 +190,7 @@
             padding: 3px 0;
             transition: color 0.15s ease;
         }
-
-        .toc-list a:hover { color: #c7d2fe; }
+        .toc-list a:hover { color: #b7f3d1; }
         .toc-list a i { font-size: 10px; color: var(--primary); }
 
         /* ============================================================
@@ -212,7 +211,7 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), #818cf8);
+            background: linear-gradient(135deg, var(--primary), #34d399);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -265,14 +264,14 @@
 
         /* Code / example blocks */
         .code-block {
-            background: #060a12;
-            border: 1px solid rgba(255,255,255,0.07);
+            background: #02110a;
+            border: 1px solid rgba(34,197,94,0.06);
             border-radius: var(--radius-sm);
             padding: 14px 18px;
             margin: 12px 0;
             font-family: var(--font-mono);
             font-size: 13px;
-            color: #c7d2fe;
+            color: #b7f3d1;
             overflow-x: auto;
             line-height: 1.7;
         }
@@ -294,9 +293,9 @@
         .callout i { flex-shrink: 0; margin-top: 2px; }
 
         .callout-tip {
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            color: #c7d2fe;
+            background: rgba(34, 197, 94, 0.06);
+            border: 1px solid rgba(34, 197, 94, 0.14);
+            color: #b7f3d1;
         }
         .callout-tip i { color: var(--primary); }
 
@@ -356,8 +355,8 @@
             font-weight: 600;
             font-family: var(--font-mono);
         }
-        .badge-idle { background: rgba(148,163,184,.12); color: #94a3b8; }
-        .badge-pending { background: rgba(99,102,241,.15); color: #a5b4fc; }
+        .badge-idle { background: rgba(34,197,94,.04); color: var(--text-secondary); }
+        .badge-pending { background: rgba(34,197,94,.12); color: var(--text-secondary); }
         .badge-running { background: rgba(245,158,11,.15); color: #fcd34d; }
         .badge-success { background: rgba(16,185,129,.15); color: #6ee7b7; }
         .badge-error { background: rgba(244,63,94,.15); color: #fda4af; }
@@ -370,13 +369,13 @@
             font-size: 13px;
         }
         .csv-table th {
-            background: rgba(99,102,241,.15);
-            color: #a5b4fc;
+            background: rgba(34,197,94,.06);
+            color: var(--text-secondary);
             padding: 9px 14px;
             text-align: left;
             font-family: var(--font-mono);
             font-size: 12px;
-            border: 1px solid rgba(99,102,241,.2);
+            border: 1px solid rgba(34,197,94,.08);
         }
         .csv-table td {
             padding: 8px 14px;
@@ -462,7 +461,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: linear-gradient(135deg, var(--primary), #818cf8);
+            background: linear-gradient(135deg, var(--primary), #34d399);
             color: #fff;
             text-decoration: none;
             padding: 12px 28px;
@@ -569,7 +568,7 @@
         <div class="info-card">
             <h3><i class="fa-solid fa-lightbulb"></i> Example Template</h3>
             <div class="code-block">You are a <span class="var">{persona}</span>.<br>Write a <span class="var">{length}</span>-word summary of the following topic:<br><span class="var">{topic}</span><br><br>Tone: <span class="var">{tone}</span></div>
-            <p style="margin-top:10px">Prompt Tuner detects all <code style="font-family: var(--font-mono); color:#a5b4fc">{variable}</code> tokens live as you type and shows them as chips below the text area.</p>
+            <p style="margin-top:10px">Prompt Tuner detects all <code style="font-family: var(--font-mono); color:var(--text-secondary)">{variable}</code> tokens live as you type and shows them as chips below the text area.</p>
         </div>
 
         <div class="callout callout-tip">
@@ -645,7 +644,7 @@
 
         <div class="info-card">
             <h3><i class="fa-solid fa-file-csv"></i> CSV Format</h3>
-            <p>Your CSV must have a header row. Each column name should match a <code style="font-family: var(--font-mono); color:#a5b4fc">{variable}</code> in your prompt. Extra columns are ignored.</p>
+            <p>Your CSV must have a header row. Each column name should match a <code style="font-family: var(--font-mono); color:var(--text-secondary)">{variable}</code> in your prompt. Extra columns are ignored.</p>
             <div class="csv-table-wrapper">
                 <table class="csv-table">
                     <thead>
@@ -751,7 +750,7 @@
             <ul>
                 <li><strong>Checkbox</strong> — Select rows for selective re-runs or batch actions.</li>
                 <li><strong>ID</strong> — Auto-assigned sequential identifier for this session.</li>
-                <li><strong>Variable columns</strong> — One column per <code style="font-family:var(--font-mono);color:#a5b4fc">{variable}</code>, editable inline.</li>
+                <li><strong>Variable columns</strong> — One column per <code style="font-family:var(--font-mono);color:var(--text-secondary)">{variable}</code>, editable inline.</li>
                 <li><strong>Hydrated Prompt</strong> — The fully substituted prompt sent to the model. Click to view in full.</li>
                 <li><strong>LLM Output</strong> — The model's response. Click to view in full or copy.</li>
                 <li><strong>Key #N badge</strong> — Which of your API keys was used for this run.</li>
@@ -808,10 +807,10 @@
             <p>Click the <strong>Export CSV</strong> button in the results bar. The downloaded file contains:</p>
             <ul style="margin-top: 8px;">
                 <li>All input variable columns</li>
-                <li><code style="font-family:var(--font-mono);color:#a5b4fc">Hydrated Prompt</code></li>
-                <li><code style="font-family:var(--font-mono);color:#a5b4fc">LLM Output</code></li>
-                <li><code style="font-family:var(--font-mono);color:#a5b4fc">Status</code> (success / error)</li>
-                <li><code style="font-family:var(--font-mono);color:#a5b4fc">Key Index Used</code></li>
+                <li><code style="font-family:var(--font-mono);color:var(--text-secondary)">Hydrated Prompt</code></li>
+                <li><code style="font-family:var(--font-mono);color:var(--text-secondary)">LLM Output</code></li>
+                <li><code style="font-family:var(--font-mono);color:var(--text-secondary)">Status</code> (success / error)</li>
+                <li><code style="font-family:var(--font-mono);color:var(--text-secondary)">Key Index Used</code></li>
             </ul>
         </div>
 
