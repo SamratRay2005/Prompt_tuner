@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING
 
 from providers.gemini_provider import GeminiProvider
 from providers.groq_provider import GroqProvider
+from providers.mistral_provider import MistralProvider
 
 if TYPE_CHECKING:
     from providers.base import LLMProvider
@@ -35,6 +36,7 @@ if TYPE_CHECKING:
 _REGISTRY: dict[str, type["LLMProvider"]] = {
     "groq": GroqProvider,
     "gemini": GeminiProvider,
+    "mistral": MistralProvider,
     # "openai":    OpenAIProvider,    ← example future entry
     # "anthropic": AnthropicProvider, ← example future entry
     # "cohere":    CohereProvider,    ← example future entry
