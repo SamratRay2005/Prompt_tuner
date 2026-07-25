@@ -133,10 +133,13 @@ class LLMProvider(ABC):
 
                 # Non-200 response — classify and decide whether to rotate
                 logger.warning(
-                    "Provider call failed: provider=%s key_index=%d status=%d",
-                    self.provider_name, try_idx, http_resp.status_code,
+                    "Provider call failed: provider=%s key_index=%d status=%d response=%s",
+                    self.provider_name, try_idx, http_resp.status_code, http_resp.text
                 )
-                error_details.append(f"Key {try_idx}: HTTP {http_resp.status_code}")
+                
+                # Include the response text (first 100 chars) in the error shown to the user
+                err_msg = (http_resp.text or "")[:100].replace('\n', ' ')
+                error_details.append(f"Key {try_idx}: HTTP {http_resp.status_code} ({err_msg})")
 
                 if is_key_specific_error(http_resp.status_code, http_resp.text):
                     time.sleep(_RETRY_SLEEP_SECONDS)
