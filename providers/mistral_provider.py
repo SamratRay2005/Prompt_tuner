@@ -37,10 +37,14 @@ class MistralProvider(LLMProvider):
             messages.append({"role": "system", "content": req.system_prompt})
         messages.append({"role": "user", "content": req.prompt})
 
+        # Mistral API restricts temperature to a maximum of 1.5
+        # The UI slider allows up to 2.0, so we clamp it to prevent 422 errors.
+        mistral_temp = max(0.0, min(req.temperature, 1.5))
+
         payload = {
             "model": req.model,
             "messages": messages,
-            "temperature": req.temperature,
+            "temperature": mistral_temp,
             "max_tokens": req.max_tokens,
         }
 
