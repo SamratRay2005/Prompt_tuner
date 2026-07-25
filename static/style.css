@@ -777,7 +777,9 @@ select,
 }
 
 /* Obscured/masked input style */
-.api-keys-textarea.masked {
+.api-keys-textarea.masked,
+.api-keys-textarea-compact.masked,
+#api-keys.masked {
     -webkit-text-security: disc; /* Support for webkit key masking in textarea */
     text-security: disc;
 }
